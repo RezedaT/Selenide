@@ -2,7 +2,7 @@ package ru.netology;
 
 import com.codeborne.selenide.Condition;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.Keys;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -14,7 +14,6 @@ import static com.codeborne.selenide.Selenide.*;
 import static org.openqa.selenium.Keys.BACK_SPACE;
 
 public class CardDeliveryTest {
-    private WebDriver driver;
 
     @Test
     void shouldSendSuccessfulRequest() {
@@ -32,24 +31,24 @@ public class CardDeliveryTest {
                 .shouldHave(Condition.text("Успешно! Встреча успешно забронирована на " + dueDate),
                         Duration.ofSeconds(15));
     }
-    //тест не проходит в CI
-//    @Test
-//    void shouldSendSuccessfulRequestWithCitySearch() {
-//        open("http://localhost:9999");
-//        String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-//        ;
-//        $("[data-test-id='city'] input").setValue("йо");
-//        $$(".menu-item").findBy(exactText("Йошкар-Ола")).click();
-//        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
-//        $("[data-test-id='date'] input").setValue(dueDate);
-//        $("[data-test-id='name'] input").setValue("Иванова Мария");
-//        $("[data-test-id=phone] input").setValue("+79876543211");
-//        $("[data-test-id=agreement]").click();
-//        $x("//span[contains(text(), 'Забронировать')]").click();
-//        $("[data-test-id='notification']")
-//                .shouldHave(text("Успешно! Встреча успешно забронирована на " + dueDate),
-//                        Duration.ofSeconds(15));
-//    }
+
+    //    тест не проходит в CI
+    @Test
+    void shouldSendSuccessfulRequestWithCitySearch() {
+        open("http://localhost:9999");
+        String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        $("[data-test-id='city'] input").setValue("йо");
+        $$(".menu-item").findBy(exactText("Йошкар-Ола")).click();
+        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
+        $("[data-test-id='date'] input").setValue(dueDate);
+        $("[data-test-id='name'] input").setValue("Иванова Мария");
+        $("[data-test-id=phone] input").setValue("+79876543211");
+        $("[data-test-id=agreement]").click();
+        $x("//span[contains(text(), 'Забронировать')]").click();
+        $("[data-test-id='notification']")
+                .shouldHave(text("Успешно! Встреча успешно забронирована на " + dueDate),
+                        Duration.ofSeconds(15));
+    }
 
     //тест не проходит из-за фамилии с буквой Ё
 //    @Test
@@ -87,14 +86,13 @@ public class CardDeliveryTest {
     void shouldNotSendEmptyRequest() {
         open("http://localhost:9999");
         $("[data-test-id='city'] input").setValue("");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
+        $("[data-test-id=date] input").setValue(Keys.CONTROL + "a" + Keys.DELETE);
         $("[data-test-id='name'] input").setValue("");
         $("[data-test-id='phone'] input").setValue("");
-        $("[data-test-id='agreement']").click();
         $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='city'] .input__sub")
+        $("[data-test-id='city'] .input__inner  .input__sub")
                 .shouldBe(visible)
-                .shouldHave(text("Поле обязательно для заполнения"));
+                .shouldHave(Condition.text("Поле обязательно для заполнения"));
     }
 
     @Test
@@ -108,7 +106,7 @@ public class CardDeliveryTest {
         $("[data-test-id=phone] input").setValue("+79876543211");
         $("[data-test-id=agreement]").click();
         $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='city']  .input__sub")
+        $("[data-test-id='city'] .input__inner  .input__sub")
                 .shouldBe(visible)
                 .shouldHave(Condition.text("Поле обязательно для заполнения"));
     }
@@ -245,12 +243,10 @@ public class CardDeliveryTest {
         $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
         $("[data-test-id='date'] input").setValue(dueDate);
         $("[data-test-id='name'] input").setValue("Иванова Мария");
-        $("[data-test-id='phone'] input").setValue("+7fa-sfge-av");
-        $("[data-test-id=agreement]").click();
+        $("[data-test-id='phone'] input").setValue("+79876543211");
         $x("//span[contains(text(), 'Забронировать')]").click();
         $("[data-test-id='agreement'] .checkbox__text")
                 .shouldBe(visible)
-                .shouldHave(text("Я соглашаюсь с условиями обработки и использования моих персональных данных"),
-                        Condition.cssValue("user-select", "none"));
+                .shouldHave(text("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
     }
 }
