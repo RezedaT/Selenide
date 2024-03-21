@@ -32,7 +32,7 @@ public class CardDeliveryTest {
                         Duration.ofSeconds(15));
     }
 
-   
+
     @Test
     void shouldSendSuccessfulRequestWithCitySearch() {
         open("http://localhost:9999");
@@ -96,10 +96,25 @@ public class CardDeliveryTest {
     }
 
     @Test
+    void shouldNotSendRequestEmptyWithCheckBox() {
+        open("http://localhost:9999");
+        $("[data-test-id='city'] input").setValue("");
+        $("[data-test-id=date] input").setValue(Keys.CONTROL + "a" + Keys.DELETE);
+        $("[data-test-id='date'] input").setValue("");
+        $("[data-test-id='name'] input").setValue("");
+        $("[data-test-id=phone] input").setValue("");
+        $("[data-test-id=agreement]").click();
+        $x("//span[contains(text(), 'Забронировать')]").click();
+        $("[data-test-id='city'] .input__inner  .input__sub")
+                .shouldBe(visible)
+                .shouldHave(Condition.text("Поле обязательно для заполнения"));
+    }
+
+    @Test
     void shouldNotSendRequestEmptyCity() {
         open("http://localhost:9999");
         String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        $("[data-test-id='city'] input").setValue(" ");
+        $("[data-test-id='city'] input").setValue("");
         $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
         $("[data-test-id='date'] input").setValue(dueDate);
         $("[data-test-id='name'] input").setValue("Иванова Мария");
