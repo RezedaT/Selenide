@@ -2,6 +2,7 @@ package ru.netology;
 
 import com.codeborne.selenide.Condition;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.WebDriver;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import static com.codeborne.selenide.Selenide.*;
 import static org.openqa.selenium.Keys.BACK_SPACE;
 
 public class CardDeliveryTest {
+    private WebDriver driver;
 
     @Test
     void shouldSendSuccessfulRequest() {
