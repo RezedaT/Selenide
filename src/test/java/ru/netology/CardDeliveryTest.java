@@ -32,7 +32,7 @@ public class CardDeliveryTest {
                         Duration.ofSeconds(15));
     }
 
-    //    тест не проходит в CI
+   
     @Test
     void shouldSendSuccessfulRequestWithCitySearch() {
         open("http://localhost:9999");
