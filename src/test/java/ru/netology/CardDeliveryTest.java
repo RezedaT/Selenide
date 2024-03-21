@@ -32,7 +32,7 @@ public class CardDeliveryTest {
     }
 
     @Test
-    void shouldSendSuccessfulRequestCitySearch() {
+    void shouldSendSuccessfulRequestWithCitySearch() {
         open("http://localhost:9999");
         String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         ;
@@ -189,7 +189,7 @@ public class CardDeliveryTest {
     }
 
     @Test
-    void shouldNotSendRequestInvalidName() {
+    void shouldNotSendRequestWithInvalidName() {
         open("http://localhost:9999");
         String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         $("[data-test-id='city'] input").setValue("Йошкар-Ола");
