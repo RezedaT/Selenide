@@ -8,11 +8,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selectors.byText;
+import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Selenide.*;
-import static com.codeborne.selenide.files.DownloadActions.click;
-import static org.openqa.selenium.Keys.*;
 
 public class CardDeliveryTest {
 
@@ -39,7 +36,7 @@ public class CardDeliveryTest {
     @Test
     void shouldSendSuccessfulRequestWithCalender() {
         open("http://localhost:9999");
-String dueDate = planningDate(10, "dd.MM.yyyy");
+        String dueDate = planningDate(10, "dd.MM.yyyy");
         $("[data-test-id='city'] input").setValue("Йошкар-Ола");
         $("button").click();
         if (!planningDate(3, "MM").equals(planningDate(7, "MM"))) {
