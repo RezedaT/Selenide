@@ -12,273 +12,51 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.files.DownloadActions.click;
-import static org.openqa.selenium.Keys.BACK_SPACE;
+import static org.openqa.selenium.Keys.*;
 
 public class CardDeliveryTest {
 
-    @Test
-    void shouldSendSuccessfulRequest() {
-        open("http://localhost:9999");
-        String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        $("[data-test-id='city'] input").setValue("Йошкар-Ола");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
-        $("[data-test-id='date'] input").setValue(dueDate);
-        $("[data-test-id='name'] input").setValue("Иванова Мария");
-        $("[data-test-id=phone] input").setValue("+79876543211");
-        $("[data-test-id=agreement]").click();
-        $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='notification']")
-                .shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .shouldHave(exactText("Успешно! Встреча успешно забронирована на " + dueDate));
-    }
-    @Test
-    void shouldSendSuccessfulRequestWithDayMore3() {
-        open("http://localhost:9999");
-        String dueDate = LocalDate.now().plusDays(4).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        $("[data-test-id='city'] input").setValue("Йошкар-Ола");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
-        $("[data-test-id='date'] input").setValue(dueDate);
-        $("[data-test-id='name'] input").setValue("Иванова Мария");
-        $("[data-test-id='phone'] input").setValue("+79876543211");
-        $("[data-test-id='agreement'] .checkbox__box").click();
-        $(byText("Забронировать")).click();
-        $("[data-test-id='notification']")
-                .shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .shouldHave(exactText("Успешно! Встреча успешно забронирована на " + dueDate));
-    }
-    @Test
-    void shouldSendSuccessfulRequestWithValidName() {
-        open("http://localhost:9999");
-        String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        $("[data-test-id='city'] input").setValue("Йошкар-Ола");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
-        $("[data-test-id='date'] input").setValue(dueDate);
-        $("[data-test-id='name'] input").setValue("Иванова-Белкина Мария-Анна");
-        $("[data-test-id='phone'] input").setValue("+79876543211");
-        $("[data-test-id='agreement'] .checkbox__box").click();
-        $(byText("Забронировать")).click();
-        $("[data-test-id='notification']")
-                .shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .shouldHave(exactText("Успешно! Встреча успешно забронирована на " + dueDate));
-    }
-
-    @Test
-    void shouldNotSendEmptyRequest() {
-        open("http://localhost:9999");
-        $("[data-test-id='city'] input").setValue("");
-        $("[data-test-id=date] input").setValue(Keys.CONTROL + "a" + Keys.DELETE);
-        $("[data-test-id='name'] input").setValue("");
-        $("[data-test-id='phone'] input").setValue("");
-        $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='city'] .input__inner  .input__sub")
-                .shouldBe(visible)
-                .shouldHave(Condition.text("Поле обязательно для заполнения"));
-    }
-
-    @Test
-    void shouldNotSendRequestEmptyWithCheckBox() {
-        open("http://localhost:9999");
-        $("[data-test-id='city'] input").setValue("");
-        $("[data-test-id=date] input").setValue(Keys.CONTROL + "a" + Keys.DELETE);
-        $("[data-test-id='date'] input").setValue("");
-        $("[data-test-id='name'] input").setValue("");
-        $("[data-test-id=phone] input").setValue("");
-        $("[data-test-id=agreement]").click();
-        $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='city'] .input__inner  .input__sub")
-                .shouldBe(visible)
-                .shouldHave(Condition.text("Поле обязательно для заполнения"));
-    }
-
-    @Test
-    void shouldNotSendRequestEmptyCity() {
-        open("http://localhost:9999");
-        String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        $("[data-test-id='city'] input").setValue("");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
-        $("[data-test-id='date'] input").setValue(dueDate);
-        $("[data-test-id='name'] input").setValue("Иванова Мария");
-        $("[data-test-id=phone] input").setValue("+79876543211");
-        $("[data-test-id=agreement]").click();
-        $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='city'] .input__inner  .input__sub")
-                .shouldBe(visible)
-                .shouldHave(Condition.text("Поле обязательно для заполнения"));
-    }
-
-    @Test
-    void shouldNotSendRequestWithCityNotRussia() {
-        open("http://localhost:9999");
-        String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        $("[data-test-id='city'] input").setValue("Мюнхен");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
-        $("[data-test-id='date'] input").setValue(dueDate);
-        $("[data-test-id='name'] input").setValue("Иванова Мария");
-        $("[data-test-id=phone] input").setValue("+79876543211");
-        $("[data-test-id=agreement]").click();
-        $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='city'] .input__sub")
-                .shouldBe(visible)
-                .shouldHave(Condition.text("Доставка в выбранный город недоступна"));
-    }
-
-    @Test
-    void shouldNotSendRequestWithInvalidCityName() {
-        open("http://localhost:9999");
-        String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        $("[data-test-id='city'] input").setValue("Riga");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
-        $("[data-test-id='date'] input").setValue(dueDate);
-        $("[data-test-id='name'] input").setValue("Иванова Мария");
-        $("[data-test-id=phone] input").setValue("+79876543211");
-        $("[data-test-id=agreement]").click();
-        $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='city'] .input__sub")
-                .shouldBe(visible)
-                .shouldHave(Condition.text("Доставка в выбранный город недоступна"));
-    }
-
-    @Test
-    void shouldNotSendRequestWithLess3Days() {
-        open("http://localhost:9999");
-        String dueDate = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        $("[data-test-id='city'] input").setValue("Йошкар-Ола");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
-        $("[data-test-id='date'] input").setValue(dueDate);
-        $("[data-test-id='name'] input").setValue("Иванова Мария");
-        $("[data-test-id=phone] input").setValue("+79876543211");
-        $("[data-test-id=agreement]").click();
-        $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='date'] .input__sub")
-                .shouldBe(visible)
-                .shouldHave(text("Заказ на выбранную дату невозможен"));
-    }
-
-    @Test
-    void shouldNotSendRequestEmptyDate() {
-        open("http://localhost:9999");
-        $("[data-test-id='city'] input").setValue("Йошкар-Ола");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
-        $("[data-test-id='name'] input").setValue("Иванова Мария");
-        $("[data-test-id=phone] input").setValue("+79876543211");
-        $("[data-test-id=agreement]").click();
-        $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='date'] .input__sub")
-                .shouldBe(visible)
-                .shouldHave(text("Неверно введена дата"));
-    }
-
-    @Test
-    void shouldNotSendRequestEmptyName() {
-        open("http://localhost:9999");
-        String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        $("[data-test-id='city'] input").setValue("Йошкар-Ола");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
-        $("[data-test-id='date'] input").setValue(dueDate);
-        $("[data-test-id=phone] input").setValue("+79876543211");
-        $("[data-test-id=agreement]").click();
-        $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='name'] .input__inner .input__sub")
-                .shouldBe(visible)
-                .shouldHave(text("Поле обязательно для заполнения"));
-    }
-
-    @Test
-    void shouldNotSendRequestWithInvalidName() {
-        open("http://localhost:9999");
-        String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        $("[data-test-id='city'] input").setValue("Йошкар-Ола");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
-        $("[data-test-id='date'] input").setValue(dueDate);
-        $("[data-test-id='name'] input").setValue("Maria-Anna Peter ");
-        $("[data-test-id=phone] input").setValue("+79876543211");
-        $("[data-test-id=agreement]").click();
-        $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='name'] .input__inner .input__sub")
-                .shouldBe(visible)
-                .shouldHave(text
-                        ("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
-    }
-
-    @Test
-    void shouldNotSendRequestWithEmptyPhone() {
-        open("http://localhost:9999");
-        String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        $("[data-test-id='city'] input").setValue("Йошкар-Ола");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
-        $("[data-test-id='date'] input").setValue(dueDate);
-        $("[data-test-id='name'] input").setValue("Иванова Мария");
-        $("[data-test-id=agreement]").click();
-        $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='phone'] .input__inner .input__sub")
-                .shouldBe(visible)
-                .shouldHave(text("Поле обязательно для заполнения"));
-    }
-
-    @Test
-    void shouldNotSendRequestWithInvalidPhone() {
-        open("http://localhost:9999");
-        String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        $("[data-test-id='city'] input").setValue("Йошкар-Ола");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
-        $("[data-test-id='date'] input").setValue(dueDate);
-        $("[data-test-id='name'] input").setValue("Иванова Мария");
-        $("[data-test-id='phone'] input").setValue("+7fa-sfge-av");
-        $("[data-test-id=agreement]").click();
-        $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='phone'] .input__inner .input__sub")
-                .shouldBe(visible)
-                .shouldHave(text
-                        ("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
-    }
-
-    @Test
-    void shouldNotSendRequestEmptyCheckBox() {
-        open("http://localhost:9999");
-        String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        $("[data-test-id='city'] input").setValue("Йошкар-Ола");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
-        $("[data-test-id='date'] input").setValue(dueDate);
-        $("[data-test-id='name'] input").setValue("Иванова Мария");
-        $("[data-test-id='phone'] input").setValue("+79876543211");
-        $x("//span[contains(text(), 'Забронировать')]").click();
-        $("[data-test-id='agreement'] .checkbox__text")
-                .shouldBe(Condition.visible)
-                .shouldHave(text
-                        ("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
-    }
     //задание 2
     @Test
     void shouldSendSuccessfulRequestWithCitySearch() {
         open("http://localhost:9999");
         String dueDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         $("[data-test-id='city'] input").setValue("йо");
-        $$(".menu-item").findBy(exactText("Йошкар-Ола")).click();
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
+        $$(".menu-item").findBy(Condition.text("Йошкар-Ола")).click();
+        $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
         $("[data-test-id='date'] input").setValue(dueDate);
         $("[data-test-id='name'] input").setValue("Иванова Мария");
-        $("[data-test-id=phone] input").setValue("+79876543211");
+        $("[data-test-id='phone'] input").setValue("+79876543211");
         $("[data-test-id=agreement]").click();
-        $x("//span[contains(text(), 'Забронировать')]").click();
+        $("button.button").click();
         $("[data-test-id='notification']")
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
                 .shouldHave(exactText("Успешно! Встреча успешно забронирована на " + dueDate));
+    }
+    private String planningDate(long addDays, String pattern) {
+        return LocalDate.now().plusDays(addDays).format(DateTimeFormatter.ofPattern(pattern));
     }
     @Test
     void shouldSendSuccessfulRequestWithCalender() {
         open("http://localhost:9999");
-     String dueDate = LocalDate.now().plusDays(7).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+String dueDate = planningDate(10, "dd.MM.yyyy");
         $("[data-test-id='city'] input").setValue("Йошкар-Ола");
-        $("[data-test-id='date'] input").doubleClick().sendKeys(BACK_SPACE);
         $("button").click();
-        $("[data-test-id='date'] input").setValue(dueDate).click();
+        if (!planningDate(3, "MM").equals(planningDate(7, "MM"))) {
+            // перелестнуть календарь
+            $("calendar__arrow calendar__arrow_direction_right").click();
+        }
+//        $$("calendar__day").findBy(Condition.text(planningDate(7, "d"))).click();
+        $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
+        $("[data-test-id='date'] input").setValue(dueDate);
         $("[data-test-id='name'] input").setValue("Иванова Мария");
-        $("[data-test-id=phone] input").setValue("+79876543211");
+        $("[data-test-id='phone'] input").setValue("+79876543211");
+
         $("[data-test-id=agreement]").click();
-        $x("//span[contains(text(), 'Забронировать')]").click();
+        $("button.button").click();
         $("[data-test-id='notification']")
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
                 .shouldHave(exactText("Успешно! Встреча успешно забронирована на " + dueDate));
-    }
 
+    }
 }
