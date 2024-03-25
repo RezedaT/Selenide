@@ -36,24 +36,37 @@ public class CardDeliveryTest {
     @Test
     void shouldSendSuccessfulRequestWithCalender() {
         open("http://localhost:9999");
-        String dueDate = planningDate(10, "dd.MM.yyyy");
+        String dueDate = planningDate(7, "dd.MM.yyyy");
         $("[data-test-id='city'] input").setValue("Йошкар-Ола");
         $("button").click();
         if (!planningDate(3, "MM").equals(planningDate(7, "MM"))) {
-            // перелестнуть календарь
-            $("calendar__arrow calendar__arrow_direction_right").click();
+            $(".calendar__arrow_direction_right[data-step='1']").click();
         }
-//        $$("calendar__day").findBy(Condition.text(planningDate(7, "d"))).click();
-        $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
-        $("[data-test-id='date'] input").setValue(dueDate);
+        $$("td.calendar__day").find(Condition.text(planningDate(7, "d"))).click();
         $("[data-test-id='name'] input").setValue("Иванова Мария");
         $("[data-test-id='phone'] input").setValue("+79876543211");
-
         $("[data-test-id=agreement]").click();
         $("button.button").click();
         $("[data-test-id='notification']")
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
                 .shouldHave(exactText("Успешно! Встреча успешно забронирована на " + dueDate));
-
+    }
+    @Test
+    void shouldSendSuccessfulRequestWithCalender10() {
+        open("http://localhost:9999");
+        String dueDate = planningDate(10, "dd.MM.yyyy");
+        $("[data-test-id='city'] input").setValue("Йошкар-Ола");
+        $("button").click();
+        if (!planningDate(3, "MM").equals(planningDate(10, "MM"))) {
+            $(".calendar__arrow_direction_right[data-step='1']").click();
+        }
+        $$("td.calendar__day").find(Condition.text(planningDate(10, "d"))).click();
+        $("[data-test-id='name'] input").setValue("Иванова Мария");
+        $("[data-test-id='phone'] input").setValue("+79876543211");
+        $("[data-test-id=agreement]").click();
+        $("button.button").click();
+        $("[data-test-id='notification']")
+                .shouldBe(Condition.visible, Duration.ofSeconds(15))
+                .shouldHave(exactText("Успешно! Встреча успешно забронирована на " + dueDate));
     }
 }
